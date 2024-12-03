@@ -1,6 +1,4 @@
-#include "common.h"
-#include "stack/stack.h"
-#include "queue/queue.h"
+#include "data_struc.h"
 
 #define CARS_NUM 1005
 
