@@ -1,80 +1,101 @@
 #include "data_struc.h"
 
-tQueue* create_queue(int size)
+Queue* create_queue()
 {
-    tQueue* queue = (tQueue*)malloc(sizeof(tQueue));
-    queue->data = (int*)malloc(sizeof(int) * size);
-    queue->front = 0;
-    queue->rear = 0;
-    queue->size = size;
+    Queue* queue = (Queue*)malloc(sizeof(Queue));
+    if(queue == NULL)
+    {
+        printf("Failed to allocate memory for queue.\n");
+        exit(EXIT_FAILURE);
+    }
+    queue->front = NULL;
+    queue->rear = NULL;
     return queue;
 }
 
-bool is_full_queue(tQueue* queue)
+bool is_empty_queue(Queue* queue)
 {
-    return (queue->rear + 1) % queue->size == queue->front;
+    return queue->front == NULL;
 }
 
-bool is_empty_queue(tQueue* queue)
+void push_queue(Queue* queue, int data, int arrive_time)
 {
-    return queue->front == queue->rear;
-}
-
-void push_queue(tQueue* queue, int data)
-{
-    if (is_full_queue(queue))
+    QueueNode* new_node = (QueueNode*)malloc(sizeof(QueueNode));
+    if(new_node == NULL)
     {
-        printf("Queue is full\n");
-        return;
+        printf("Failed to allocate memory for queue node.\n");
+        exit(EXIT_FAILURE);
     }
-    queue->data[queue->rear] = data;
-    queue->rear = (queue->rear + 1) % queue->size;
+    new_node->data = data;
+    new_node->arrive_time = arrive_time; // 设置到达时间
+    new_node->next = NULL;
+    if (is_empty_queue(queue))
+    {
+        queue->front = new_node;
+        queue->rear = new_node;
+    }
+    else
+    {
+        queue->rear->next = new_node;
+        queue->rear = new_node;
+    }
 }
 
-int pop_queue(tQueue* queue)
+QueueNode* pop_queue(Queue* queue)
 {
     if (is_empty_queue(queue))
     {
         printf("Queue is empty\n");
-        return -1;
+        return NULL;
     }
-    int data = queue->data[queue->front];
-    queue->front = (queue->front + 1) % queue->size;
-    return data;
+    QueueNode* temp = queue->front;
+    queue->front = temp->next;
+    if (queue->front == NULL)
+    {
+        queue->rear = NULL;
+    }
+    return temp;
 }
 
-void free_queue(tQueue* queue)
+void free_queue(Queue* queue)
 {
-    free(queue->data);
+    while (!is_empty_queue(queue))
+    {
+        pop_queue(queue);
+    }
     free(queue);
 }
 
-
-tStack* create_stack(int size)
+Stack* create_stack(int size)
 {
-    tStack *s = (tStack *)malloc(sizeof(tStack));
+    Stack *s = (Stack *)malloc(sizeof(Stack));
+    if(s == NULL)
+    {
+        printf("Failed to allocate memory for stack.\n");
+        exit(EXIT_FAILURE);
+    }
     s->data = (int *)malloc(size * sizeof(int));
     s->top = -1;
     s->size = size;
     return s;
 }
 
-void push_stack(tStack *s, int data)
+void push_stack(Stack *s, int data)
 {
     if (s->top == s->size - 1)
     {
-        printf("tStack is full\n");
+        printf("Stack is full\n");
         return;
     }
     s->top++;
     s->data[s->top] = data;
 }   
 
-int pop_stack(tStack *s)
+int pop_stack(Stack *s)
 {
     if (s->top == -1)
     {
-        printf("tStack is empty\n");
+        printf("Stack is empty\n");
         return -1;
     }
     int data = s->data[s->top];
@@ -82,17 +103,17 @@ int pop_stack(tStack *s)
     return data;
 }
 
-bool is_empty_stack(tStack *s)
+bool is_empty_stack(Stack *s)
 {
     return s->top == -1;
 }
 
-bool is_full_stack(tStack *s)
+bool is_full_stack(Stack *s)
 {
     return s->top == s->size - 1;
 }
 
-void free_stack(tStack *s)
+void free_stack(Stack *s)
 {
     free(s->data);
     free(s);

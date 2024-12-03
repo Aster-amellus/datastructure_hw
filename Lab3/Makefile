@@ -2,7 +2,7 @@ CC = gcc
 
 CFLAGS = -Wall -g
 
-TARGET = parking_lot
+TARGET = school_map
 
 SRCS = $(shell find . -name '*.c')
 
